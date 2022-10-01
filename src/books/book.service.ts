@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { async } from 'rxjs';
 import { Book } from './book.model';
 
 @Injectable()
