@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { async } from 'rxjs';
 import { Book } from './book.model';
 
 @Injectable()
@@ -70,6 +71,37 @@ export class BookService {
       publishDate: book.publishDate,
       numOfPages: book.numOfPages,
     };
+  };
+
+  editBook = async (
+    bookId: string,
+    bookData: {
+      name: string;
+      author: string;
+      publishDate: string;
+      numOfPages: number;
+    },
+  ) => {
+    const book = await this.findBook(bookId);
+
+    book.name = bookData.name ? bookData.name : book.name;
+    book.author = bookData.author ? bookData.author : book.author;
+    book.publishDate = bookData.publishDate
+      ? bookData.publishDate
+      : book.publishDate;
+    book.numOfPages = bookData.numOfPages
+      ? bookData.numOfPages
+      : book.numOfPages;
+
+    await book.save();
+    return { response: { message: 'Book data updated successsfully' } };
+  };
+
+  deleteBook = async (bookId: string) => {
+    const book = await this.findBook(bookId);
+
+    await book.remove();
+    return { response: { message: 'Book deleted successsfully' } };
   };
 
   private findBook = async (id: string) => {
