@@ -4,7 +4,7 @@ export const AuthorSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     DOB: { type: Date, required: true },
-    age: { type: Number },
+    age: { type: Number, required: true },
     numOfBooks: { type: Number, required: true, default: 0 },
     biography: { type: String, required: true },
   },

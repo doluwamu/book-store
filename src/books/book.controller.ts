@@ -6,10 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  NotFoundException,
 } from '@nestjs/common';
 import { BookService } from './book.service';
 
-@Controller('books')
+@Controller('api/v1/books')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
@@ -20,6 +21,13 @@ export class BookController {
     @Body('publishDate') publishDate: string,
     @Body('numOfPages') numOfPages: number,
   ) {
+    if (!name) throw new NotFoundException('name is a required field');
+    if (!author) throw new NotFoundException('author is a required field');
+    if (!publishDate)
+      throw new NotFoundException('publishDate is a required field');
+    if (!numOfPages)
+      throw new NotFoundException('numOfPages is a required field');
+
     const bookCreateRes = await this.bookService.createBook(
       name,
       author,
