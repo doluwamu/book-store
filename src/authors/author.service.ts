@@ -91,6 +91,12 @@ export class AuthorService {
     return { message: 'Author details updated successfully!' };
   };
 
+  deleteAuthor = async (authorId: string) => {
+    const author = await this.findAuthor(authorId);
+    await author.remove();
+    return { response: { message: 'Author successfully removed' } };
+  };
+
   findAuthor = async (authorId: string) => {
     try {
       const author = await this.authorModel.findById(authorId).exec();

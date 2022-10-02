@@ -6,6 +6,7 @@ import {
   Post,
   Patch,
   NotFoundException,
+  Delete,
 } from '@nestjs/common';
 import { AuthorService } from './author.service';
 
@@ -77,5 +78,11 @@ export class AuthorController {
     );
 
     return updatedAuthor;
+  }
+
+  @Delete(':id')
+  async removeAuthor(@Param('id') authorId: string) {
+    const authorDelete = await this.authorService.deleteAuthor(authorId);
+    return authorDelete.response;
   }
 }
