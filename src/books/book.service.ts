@@ -4,25 +4,41 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Book } from './book.model';
 
 @Injectable()
 export class BookService {
   constructor(@InjectModel('Book') private readonly bookModel: Model<Book>) {}
 
-  createBook = async (
-    name: string,
-    author: string,
-    publishDate: string,
-    numOfPages: number,
-  ) => {
+  createBook = async (bookData: {
+    image: string;
+    name: string;
+    author: string;
+    publishDate: string;
+    numOfPages: number;
+    preface: string;
+    link: string;
+  }) => {
     try {
+      const foundBook = await this.bookModel
+        .findOne({ name: bookData.name })
+        .exec();
+
+      if (foundBook) {
+        throw new BadRequestException({
+          message: 'This book already exists',
+        });
+      }
+
       const newBook = new this.bookModel({
-        name,
-        author,
-        publishDate,
-        numOfPages,
+        image: bookData.image,
+        name: bookData.name,
+        author: bookData.author,
+        publishDate: bookData.publishDate,
+        numOfPages: bookData.numOfPages,
+        preface: bookData.preface,
+        link: bookData.link,
       });
 
       const result = await newBook.save();
@@ -42,13 +58,7 @@ export class BookService {
   listBooks = async () => {
     try {
       const books = await this.bookModel.find({});
-      return books.map((book) => ({
-        id: book.id,
-        name: book.name,
-        author: book.author,
-        publishDate: book.publishDate,
-        numOfPages: book.numOfPages,
-      }));
+      return books.map((book) => this.bookInfo(book));
     } catch (error) {
       const errObj: {
         name: string;
@@ -63,26 +73,24 @@ export class BookService {
 
   getBook = async (bookId: string) => {
     const book = await this.findBook(bookId);
-    return {
-      id: book.id,
-      name: book.name,
-      author: book.author,
-      publishDate: book.publishDate,
-      numOfPages: book.numOfPages,
-    };
+    return this.bookInfo(book);
   };
 
   editBook = async (
     bookId: string,
     bookData: {
+      image: string;
       name: string;
       author: string;
       publishDate: string;
       numOfPages: number;
+      preface: string;
+      link: string;
     },
   ) => {
     const book = await this.findBook(bookId);
 
+    book.image = bookData.image ? bookData.image : book.image;
     book.name = bookData.name ? bookData.name : book.name;
     book.author = bookData.author ? bookData.author : book.author;
     book.publishDate = bookData.publishDate
@@ -91,6 +99,8 @@ export class BookService {
     book.numOfPages = bookData.numOfPages
       ? bookData.numOfPages
       : book.numOfPages;
+    book.preface = bookData.preface ? bookData.preface : book.preface;
+    book.link = bookData.link ? bookData.link : book.link;
 
     await book.save();
     return { response: { message: 'Book data updated successsfully' } };
@@ -101,6 +111,11 @@ export class BookService {
 
     await book.remove();
     return { response: { message: 'Book deleted successsfully' } };
+  };
+
+  clearBooks = async () => {
+    await this.bookModel.deleteMany({});
+    return { response: { message: 'Books delted!' } };
   };
 
   private findBook = async (id: string) => {
@@ -120,5 +135,22 @@ export class BookService {
       };
       throw new BadRequestException(errObj);
     }
+  };
+
+  private bookInfo = (
+    bookData: Book & {
+      _id: Types.ObjectId;
+    },
+  ) => {
+    return {
+      id: bookData.id,
+      image: bookData.image,
+      name: bookData.name,
+      author: bookData.author,
+      publishDate: bookData.publishDate,
+      numOfPages: bookData.numOfPages,
+      preface: bookData.preface,
+      link: bookData.link,
+    };
   };
 }

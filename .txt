@@ -1,0 +1,25 @@
+
+
+
+
+<template>
+  <div class="home">
+    <div v-for="book in books" :key="book.id">
+      <p>{{ book.name }}</p>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import books from "@/assets/data/books";
+
+export default {
+  name: "HomeView",
+  components: {},
+  data() {
+    return {
+      books,
+    };
+  },
+};
+</script>

@@ -16,24 +16,30 @@ export class BookController {
 
   @Post()
   async addBook(
+    @Body('image') image: string,
     @Body('name') name: string,
     @Body('author') author: string,
     @Body('publishDate') publishDate: string,
     @Body('numOfPages') numOfPages: number,
+    @Body('preface') preface: string,
+    @Body('link') link: string,
   ) {
     if (!name) throw new NotFoundException('name is a required field');
     if (!author) throw new NotFoundException('author is a required field');
     if (!publishDate)
       throw new NotFoundException('publishDate is a required field');
-    if (!numOfPages)
-      throw new NotFoundException('numOfPages is a required field');
+    if (!preface) throw new NotFoundException('preface is a required field');
+    if (!link) throw new NotFoundException('link is a required field');
 
-    const bookCreateRes = await this.bookService.createBook(
+    const bookCreateRes = await this.bookService.createBook({
+      image,
       name,
       author,
       publishDate,
       numOfPages,
-    );
+      preface,
+      link,
+    });
     return bookCreateRes;
   }
 
@@ -52,16 +58,22 @@ export class BookController {
   @Patch(':id')
   async updateBook(
     @Param('id') bookId: string,
+    @Body('image') image: string,
     @Body('name') name: string,
     @Body('author') author: string,
     @Body('publishDate') publishDate: string,
     @Body('numOfPages') numOfPages: number,
+    @Body('preface') preface: string,
+    @Body('link') link: string,
   ) {
     const bookEdit = await this.bookService.editBook(bookId, {
+      image,
       name,
       author,
       publishDate,
       numOfPages,
+      preface,
+      link,
     });
     return bookEdit.response;
   }
@@ -70,5 +82,11 @@ export class BookController {
   async removeBook(@Param('id') bookId: string) {
     const bookDelete = await this.bookService.deleteBook(bookId);
     return bookDelete.response;
+  }
+
+  @Delete('/all/clear')
+  async removeBooks() {
+    const deleteBooks = await this.bookService.clearBooks();
+    return deleteBooks.response;
   }
 }
