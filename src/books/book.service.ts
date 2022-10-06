@@ -15,6 +15,7 @@ export class BookService {
     image: string;
     name: string;
     author: string;
+    category: string;
     publishDate: string;
     numOfPages: number;
     preface: string;
@@ -35,6 +36,7 @@ export class BookService {
         image: bookData.image,
         name: bookData.name,
         author: bookData.author,
+        category: bookData.category,
         publishDate: bookData.publishDate,
         numOfPages: bookData.numOfPages,
         preface: bookData.preface,
@@ -82,6 +84,7 @@ export class BookService {
       image: string;
       name: string;
       author: string;
+      category: string;
       publishDate: string;
       numOfPages: number;
       preface: string;
@@ -93,6 +96,7 @@ export class BookService {
     book.image = bookData.image ? bookData.image : book.image;
     book.name = bookData.name ? bookData.name : book.name;
     book.author = bookData.author ? bookData.author : book.author;
+    book.category = bookData.category ? bookData.category : book.category;
     book.publishDate = bookData.publishDate
       ? bookData.publishDate
       : book.publishDate;
@@ -147,6 +151,7 @@ export class BookService {
       image: bookData.image,
       name: bookData.name,
       author: bookData.author,
+      category: bookData.category,
       publishDate: bookData.publishDate,
       numOfPages: bookData.numOfPages,
       preface: bookData.preface,
