@@ -86,15 +86,37 @@ export class AuthorService {
       ? authorDetails.biography
       : author.biography;
 
-    await author.save();
-
-    return { message: 'Author details updated successfully!' };
+    try {
+      await author.save();
+      return { message: 'Author details updated successfully!' };
+    } catch (error) {
+      const errObj: {
+        name: string;
+        message: string;
+      } = {
+        name: error.name,
+        message: error.message,
+      };
+      throw new BadRequestException(errObj);
+    }
   };
 
   deleteAuthor = async (authorId: string) => {
     const author = await this.findAuthor(authorId);
-    await author.remove();
-    return { response: { message: 'Author successfully removed' } };
+
+    try {
+      await author.remove();
+      return { response: { message: 'Author successfully removed' } };
+    } catch (error) {
+      const errObj: {
+        name: string;
+        message: string;
+      } = {
+        name: error.name,
+        message: error.message,
+      };
+      throw new BadRequestException(errObj);
+    }
   };
 
   findAuthor = async (authorId: string) => {

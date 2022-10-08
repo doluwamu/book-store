@@ -92,34 +92,66 @@ export class BookService {
     },
   ) => {
     const book = await this.findBook(bookId);
+    try {
+      book.image = bookData.image ? bookData.image : book.image;
+      book.name = bookData.name ? bookData.name : book.name;
+      book.author = bookData.author ? bookData.author : book.author;
+      book.category = bookData.category ? bookData.category : book.category;
+      book.publishDate = bookData.publishDate
+        ? bookData.publishDate
+        : book.publishDate;
+      book.numOfPages = bookData.numOfPages
+        ? bookData.numOfPages
+        : book.numOfPages;
+      book.preface = bookData.preface ? bookData.preface : book.preface;
+      book.link = bookData.link ? bookData.link : book.link;
 
-    book.image = bookData.image ? bookData.image : book.image;
-    book.name = bookData.name ? bookData.name : book.name;
-    book.author = bookData.author ? bookData.author : book.author;
-    book.category = bookData.category ? bookData.category : book.category;
-    book.publishDate = bookData.publishDate
-      ? bookData.publishDate
-      : book.publishDate;
-    book.numOfPages = bookData.numOfPages
-      ? bookData.numOfPages
-      : book.numOfPages;
-    book.preface = bookData.preface ? bookData.preface : book.preface;
-    book.link = bookData.link ? bookData.link : book.link;
-
-    await book.save();
-    return { response: { message: 'Book data updated successsfully' } };
+      await book.save();
+      return { response: { message: 'Book data updated successsfully' } };
+    } catch (error) {
+      const errObj: {
+        name: string;
+        message: string;
+      } = {
+        name: error.name,
+        message: error.message,
+      };
+      throw new BadRequestException(errObj);
+    }
   };
 
   deleteBook = async (bookId: string) => {
     const book = await this.findBook(bookId);
 
-    await book.remove();
-    return { response: { message: 'Book deleted successsfully' } };
+    try {
+      await book.remove();
+      return { response: { message: 'Book deleted successsfully' } };
+    } catch (error) {
+      const errObj: {
+        name: string;
+        message: string;
+      } = {
+        name: error.name,
+        message: error.message,
+      };
+      throw new BadRequestException(errObj);
+    }
   };
 
   clearBooks = async () => {
-    await this.bookModel.deleteMany({});
-    return { response: { message: 'Books delted!' } };
+    try {
+      await this.bookModel.deleteMany({});
+      return { response: { message: 'Books delted!' } };
+    } catch (error) {
+      const errObj: {
+        name: string;
+        message: string;
+      } = {
+        name: error.name,
+        message: error.message,
+      };
+      throw new BadRequestException(errObj);
+    }
   };
 
   private findBook = async (id: string) => {
