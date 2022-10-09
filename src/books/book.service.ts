@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { errorObj } from 'src/helpers/errorObj';
 import { Book } from './book.model';
 
 @Injectable()
@@ -46,14 +47,7 @@ export class BookService {
       const result = await newBook.save();
       return { message: 'Book added successfully', id: result.id };
     } catch (error) {
-      const errObj: {
-        name: string;
-        message: string;
-      } = {
-        name: error.name,
-        message: error.message,
-      };
-      throw new BadRequestException(errObj);
+      throw new BadRequestException(errorObj(error));
     }
   };
 
@@ -62,14 +56,7 @@ export class BookService {
       const books = await this.bookModel.find({});
       return books.map((book) => this.bookInfo(book));
     } catch (error) {
-      const errObj: {
-        name: string;
-        message: string;
-      } = {
-        name: error.name,
-        message: error.message,
-      };
-      throw new BadRequestException(errObj);
+      throw new BadRequestException(errorObj(error));
     }
   };
 
@@ -109,14 +96,7 @@ export class BookService {
       await book.save();
       return { response: { message: 'Book data updated successsfully' } };
     } catch (error) {
-      const errObj: {
-        name: string;
-        message: string;
-      } = {
-        name: error.name,
-        message: error.message,
-      };
-      throw new BadRequestException(errObj);
+      throw new BadRequestException(errorObj(error));
     }
   };
 
@@ -127,14 +107,7 @@ export class BookService {
       await book.remove();
       return { response: { message: 'Book deleted successsfully' } };
     } catch (error) {
-      const errObj: {
-        name: string;
-        message: string;
-      } = {
-        name: error.name,
-        message: error.message,
-      };
-      throw new BadRequestException(errObj);
+      throw new BadRequestException(errorObj(error));
     }
   };
 
@@ -143,14 +116,7 @@ export class BookService {
       await this.bookModel.deleteMany({});
       return { response: { message: 'Books delted!' } };
     } catch (error) {
-      const errObj: {
-        name: string;
-        message: string;
-      } = {
-        name: error.name,
-        message: error.message,
-      };
-      throw new BadRequestException(errObj);
+      throw new BadRequestException(errorObj(error));
     }
   };
 
@@ -162,14 +128,7 @@ export class BookService {
 
       return book;
     } catch (error) {
-      const errObj: {
-        name: string;
-        message: string;
-      } = {
-        name: error.name,
-        message: error.message,
-      };
-      throw new BadRequestException(errObj);
+      throw new BadRequestException(errorObj(error));
     }
   };
 

@@ -7,6 +7,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Author } from './author.model';
+import { errorObj } from 'src/helpers/errorObj';
 
 @Injectable()
 export class AuthorService {
@@ -32,14 +33,7 @@ export class AuthorService {
       await authorData.save();
       return { message: 'Author info successfully added', id: authorData.id };
     } catch (error) {
-      const errObj: {
-        name: string;
-        message: string;
-      } = {
-        name: error.name,
-        message: error.message,
-      };
-      throw new BadRequestException(errObj);
+      throw new BadRequestException(errorObj(error));
     }
   };
 
@@ -48,14 +42,7 @@ export class AuthorService {
       const authors = await this.authorModel.find({}).exec();
       return authors.map((author) => this.authorInformation(author));
     } catch (error) {
-      const errObj: {
-        name: string;
-        message: string;
-      } = {
-        name: error.name,
-        message: error.message,
-      };
-      throw new BadRequestException(errObj);
+      throw new BadRequestException(errorObj(error));
     }
   };
 
@@ -90,14 +77,7 @@ export class AuthorService {
       await author.save();
       return { message: 'Author details updated successfully!' };
     } catch (error) {
-      const errObj: {
-        name: string;
-        message: string;
-      } = {
-        name: error.name,
-        message: error.message,
-      };
-      throw new BadRequestException(errObj);
+      throw new BadRequestException(errorObj(error));
     }
   };
 
@@ -108,14 +88,7 @@ export class AuthorService {
       await author.remove();
       return { response: { message: 'Author successfully removed' } };
     } catch (error) {
-      const errObj: {
-        name: string;
-        message: string;
-      } = {
-        name: error.name,
-        message: error.message,
-      };
-      throw new BadRequestException(errObj);
+      throw new BadRequestException(errorObj(error));
     }
   };
 
@@ -127,14 +100,7 @@ export class AuthorService {
 
       return author;
     } catch (error) {
-      const errObj: {
-        name: string;
-        message: string;
-      } = {
-        name: error.name,
-        message: error.message,
-      };
-      throw new BadRequestException(errObj);
+      throw new BadRequestException(errorObj(error));
     }
   };
 
@@ -154,7 +120,7 @@ export class AuthorService {
     return age;
   };
 
-  authorInformation = (
+  private authorInformation = (
     author: Author & {
       _id: Types.ObjectId;
     },

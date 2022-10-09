@@ -40,4 +40,10 @@ export class UserController {
     });
     return userDataInfo;
   }
+
+  @Get()
+  async getUsers() {
+    const users = await this.userService.listUsers();
+    return users;
+  }
 }
