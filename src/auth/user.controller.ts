@@ -41,6 +41,20 @@ export class UserController {
     return userDataInfo;
   }
 
+  @Post('login')
+  async loginUser(
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
+    if (!email) throw new NotFoundException('email is a required field!');
+    if (!password) throw new NotFoundException('password is a required field!');
+
+    const userInfo = { email, password };
+
+    const loginData = await this.userService.userLogin(userInfo);
+    return loginData;
+  }
+
   @Get()
   async getUsers() {
     const users = await this.userService.listUsers();

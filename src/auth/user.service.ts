@@ -6,7 +6,12 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { errorObj } from 'src/helpers/errorObj';
-import { hashPassword } from './user.helper';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  hashPassword,
+  passwordsMatch,
+} from './user.helper';
 import { User } from './user.model';
 
 @Injectable()
@@ -20,9 +25,11 @@ export class UserService {
     password: string;
   }) => {
     try {
-      const existingUser = await this.userModel.findOne({
-        email: userInfo.email,
-      });
+      const existingUser = await this.userModel
+        .findOne({
+          email: userInfo.email,
+        })
+        .exec();
 
       if (existingUser) {
         const err: {
@@ -51,6 +58,44 @@ export class UserService {
     }
   };
 
+  userLogin = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    try {
+      const foundUser = await this.userModel
+        .findOne({ email })
+        .select('+password')
+        .exec();
+      if (!foundUser) {
+        throw new NotFoundException('Invalid email or password');
+      }
+
+      console.log(foundUser);
+
+      if (!(await passwordsMatch(password, foundUser.password))) {
+        const err: {
+          name: string;
+          message: string;
+        } = {
+          name: 'error',
+          message: 'Invalid email or password!',
+        };
+        throw new BadRequestException(errorObj(err));
+      }
+      return {
+        ...this.userInformation(foundUser),
+        accessToken: generateAccessToken(foundUser.id),
+        refreshToken: generateRefreshToken(foundUser.id),
+      };
+    } catch (error) {
+      throw new BadRequestException(errorObj(error));
+    }
+  };
+
   listUsers = async () => {
     try {
       const users = await this.userModel.find({});
@@ -66,7 +111,7 @@ export class UserService {
   private userInformation = (user: User & { _id: Types.ObjectId }) => {
     return {
       id: user.id,
-      name: user.username,
+      username: user.username,
       email: user.email,
       role: user.role,
     };
