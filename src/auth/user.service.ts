@@ -74,8 +74,6 @@ export class UserService {
         throw new NotFoundException('Invalid email or password');
       }
 
-      console.log(foundUser);
-
       if (!(await passwordsMatch(password, foundUser.password))) {
         const err: {
           name: string;
